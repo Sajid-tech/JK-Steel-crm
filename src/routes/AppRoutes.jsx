@@ -17,6 +17,12 @@ import ItemList from "@/app/item/item-list";
 import QuotationList from "@/app/quotation/quotation-list";
 import CreateQuotation from "@/app/quotation/create-quotation";
 import EditQuotation from "@/app/quotation/edit-quotation";
+import Setting from "@/app/setting/setting";
+import BuyerReport from "@/app/report/buyer/buyer-report";
+import ItemReport from "@/app/report/item/item-report";
+import QuotationReport from "@/app/report/quotation/quotation-report";
+import QuotationDetails from "@/app/report/quotation-detail/quotation-detail";
+import ViewQuotation from "@/app/quotation/view-quotation";
 
 function AppRoutes() {
   return (
@@ -35,6 +41,12 @@ function AppRoutes() {
           <Route path="/quotation" element={<QuotationList />} />
           <Route path="/quotation/create" element={<CreateQuotation />} />
           <Route path="/quotation/edit/:id" element={<EditQuotation />} />
+          <Route path="/quotation/view/:id" element={<ViewQuotation />} />
+          <Route path="/setting" element={<Setting />} />
+          <Route path="/report/buyer" element={<BuyerReport />} />
+          <Route path="/report/item" element={<ItemReport />} />
+          <Route path="/report/quotation-report" element={<QuotationReport />} />
+          <Route path="/report/quotation-detail-report" element={<QuotationDetails />} />
     
    
 

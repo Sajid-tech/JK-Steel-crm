@@ -8,7 +8,8 @@ import {
   Home,
   ChevronUp,
   X,
-  ChevronRight
+  ChevronRight,
+  ReceiptText
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -43,8 +44,35 @@ export function AppBottombar() {
       url: "/quotation",
       icon: ShoppingBag,
     },
+    // {
+    //   title: "Setting",
+    //   url: "/setting",
+    //   icon: ShoppingBag,
+    // },
+    {
+      title: "Report",
+      url: "#",
+      icon: ReceiptText,
     
-
+      items: [
+        {
+          title: "Buyer",
+          url: "/report/buyer",
+        },
+        {
+          title: "Item",
+          url: "/report/item",
+        },
+        {
+          title: "Quotation",
+          url: "/report/quotation-report",
+        },
+        {
+          title: "Quotation detail",
+          url: "/report/quotation-detail-report",
+        },
+      ]
+      }
    
   ];
   // const navItems = [

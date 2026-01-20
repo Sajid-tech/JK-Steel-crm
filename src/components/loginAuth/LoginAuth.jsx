@@ -9,17 +9,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { ContextPanel } from "@/lib/ContextPanel";
 import BASE_URL from "@/config/BaseUrl";
 import Cookies from "js-cookie";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { Eye, EyeOff } from "lucide-react";
-import logo from "../../assets/jaju1.png";
+
 export default function LoginAuth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,56 +49,9 @@ export default function LoginAuth() {
       if (intervalId) clearInterval(intervalId);
     };
   }, [isLoading]);
+  
 
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-  //   setIsLoading(true);
 
-  //   const formData = new FormData();
-  //   formData.append("username", email);
-  //   formData.append("password", password);
-
-  //   try {
-  //     const res = await axios.post(`${BASE_URL}/api/web-login`, formData);
-
-  //     if (res.status === 200) {
-  //       if (!res.data.UserInfo || !res.data.UserInfo.token) {
-  //         console.warn("⚠️ Login failed: Token missing in response");
-  //         toast.error("Login Failed: No token received.");
-  //         setIsLoading(false);
-  //         return;
-  //       }
-
-  //       const { UserInfo } = res.data;
-
-  //       console.log("Saving user details to local storage...");
-  //       localStorage.setItem("token", UserInfo.token);
-  //       localStorage.setItem("id", UserInfo.user.id);
-  //       localStorage.setItem("name", UserInfo.user.name);
-  //       localStorage.setItem("userType", UserInfo.user.user_type_id);
-  //       localStorage.setItem("email", UserInfo.user.email);
-       
-
-  //       const redirectPath = window.innerWidth < 768 ? "/home" : "/home";
-  //       console.log(`✅ Login successful! Redirecting to ${redirectPath}...`);
-  //       navigate(redirectPath);
-  //     } else {
-  //       console.warn("⚠️ Unexpected API response:", res);
-  //       toast.error("Login Failed: Unexpected response.");
-  //     }
-  //   } catch (error) {
-  //     console.error("❌ Login Error:", error.response?.data.message || error.message);
-
-  //     toast({
-  //       variant: "destructive",
-  //       title: "Login Failed",
-  //       description:
-  //         error.response?.data?.message || "Please check your credentials.",
-  //     });
-
-  //     setIsLoading(false);
-  //   }
-  // };
 
 
   const handleSubmit = async (event) => {
@@ -183,7 +134,7 @@ export default function LoginAuth() {
             <CardTitle
               className={`text-2xl text-center${ButtonConfig.loginText}`}
             >
-    JaJu Flooring
+    JK Steel
             </CardTitle>
           </CardHeader>
           <CardContent>

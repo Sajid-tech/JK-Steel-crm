@@ -18,7 +18,8 @@ import {
     Warehouse,
     Frame,
     ShoppingBag,
-    Package,  
+    Package,
+    ReceiptText,  
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -89,12 +90,60 @@ export function AppSidebar({ ...props }) {
         isActive: false,
       },
       {
-        title: "Report",
-        url: "/change-ledger-name",
+        title: "Setting",
+        url: "/setting",
         icon: Package,
         isActive: false,
       },
-    
+      // {
+      //   title: "Report",
+      //   url: "/report/buyer",
+      //   icon: Package,
+      //   isActive: false,
+      // },
+      // {
+      //   title: "Report1",
+      //   url: "/report/item",
+      //   icon: Package,
+      //   isActive: false,
+      // },
+      // {
+      //   title: "Report3",
+      //   url: "/report/quotation-report",
+      //   icon: Package,
+      //   isActive: false,
+      // },
+      // {
+      //   title: "Report4",
+      //   url: "/report/quotation-detail-report",
+      //   icon: Package,
+      //   isActive: false,
+      // },
+      {
+        title: "Report",
+        url: "#",
+        icon: ReceiptText,
+        isActive: false,
+        items: [
+          {
+            title: "Buyer",
+            url: "/report/buyer",
+          },
+          {
+            title: "Item",
+            url: "/report/item",
+          },
+          {
+            title: "Quotation",
+            url: "/report/quotation-report",
+          },
+          {
+            title: "Quotation detail",
+            url: "/report/quotation-detail-report",
+          },
+          
+        ],
+      },
      
     ],
   };

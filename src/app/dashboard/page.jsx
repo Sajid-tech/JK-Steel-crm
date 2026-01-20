@@ -143,6 +143,10 @@ export default function Page({ children }) {
               </DropdownMenuLabel>
 
               <DropdownMenuSeparator className="bg-blue-200" />
+              <DropdownMenuItem className="hover:bg-blue-100 focus:bg-blue-100 rounded-md my-0.5 mx-1" onClick={()=>navigate('/setting')}>
+                <Key className="mr-2 h-4 w-4 text-blue-700" />
+                <span className="cursor-pointer">Profile</span>
+              </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-blue-100 focus:bg-blue-100 rounded-md my-0.5 mx-1" onClick={() => setOpen(true)}>
                 <Key className="mr-2 h-4 w-4 text-blue-700" />
                 <span className="cursor-pointer">Change Password</span>
@@ -164,7 +168,7 @@ export default function Page({ children }) {
 
 
 
-        {/* Main content area - adjusted for mobile bottom nav */}
+   
         <div className="flex flex-1 flex-col gap-4 p-0 md:p-4 pt-0">
           <div className="min-h-[calc(100vh-8rem)] md:min-h-[100vh] flex-1 rounded-xl p-2 pb-16  md:pb-2">
             {children}
