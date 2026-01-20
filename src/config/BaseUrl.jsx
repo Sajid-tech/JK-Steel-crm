@@ -1,5 +1,5 @@
 //actual url
-const BASE_URL = "http://agsdemo.in/btqapi/public";
+const BASE_URL = "https://agsdemo.in/btqapi/public";
 
 //testing url 
 // const BASE_URL = "https://test.dfclogistics.online/public";

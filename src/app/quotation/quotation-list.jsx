@@ -678,7 +678,7 @@ const QuotationList = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => navigate(`/quotation/${item.id}`)}
+                      onClick={() => navigate(`/quotation/view/${item.id}`)}
                       className="h-8 text-blue-600 hover:text-blue-800"
                     >
                       <Eye className="h-4 w-4 mr-1" />

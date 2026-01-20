@@ -49,8 +49,8 @@ const CreateQuotation = () => {
       quotation_sub_item_id: "",
       quotation_sub_qnty: "",
       quotation_sub_rate: "",
-      quotation_sub_discount: "",
-      quotation_sub_tax: "",
+      quotation_sub_discount: 0,
+      quotation_sub_tax: 0,
       quotation_sub_amount: "",
     },
   ]);
@@ -233,9 +233,12 @@ const CreateQuotation = () => {
     }
 
     setErrors({});
-
+    const remarks = formData.quotation_remarks?.trim() 
+    ? formData.quotation_remarks 
+    : "We hope you find our offer to be in line with your requirement.";
     const payload = {
       ...formData,
+      quotation_remarks: remarks,
       subs: itemsData.map((item) => ({
         quotation_sub_item_id: parseInt(item.quotation_sub_item_id),
         quotation_sub_qnty: parseFloat(item.quotation_sub_qnty),
@@ -505,9 +508,9 @@ const CreateQuotation = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
-                      {/* <Label className="text-xs font-medium text-gray-600">Discount %</Label> */}
+                      <Label className="text-xs font-medium text-gray-600">Discount %</Label>
                       <Input
                         className="h-8 text-sm"
                         value={row.quotation_sub_discount}
@@ -528,7 +531,7 @@ const CreateQuotation = () => {
                     </div>
 
                     <div className="space-y-2">
-                      {/* <Label className="text-xs font-medium text-gray-600">Tax %</Label> */}
+                      <Label className="text-xs font-medium text-gray-600">Tax %</Label>
                       <Input
                         className="h-8 text-sm"
                         value={row.quotation_sub_tax}
@@ -547,7 +550,7 @@ const CreateQuotation = () => {
                         step="0.01"
                       />
                     </div>
-                  </div>
+                  </div> */}
 
                   <div className="space-y-2">
                     {/* <Label className="text-xs font-medium text-gray-600">Amount</Label> */}
@@ -720,6 +723,7 @@ const CreateQuotation = () => {
                               min="0"
                               max="100"
                               step="0.01"
+                              disabled
                             />
                           </TableCell>
 
@@ -740,6 +744,7 @@ const CreateQuotation = () => {
                               min="0"
                               max="100"
                               step="0.01"
+                              disabled
                             />
                           </TableCell>
 
