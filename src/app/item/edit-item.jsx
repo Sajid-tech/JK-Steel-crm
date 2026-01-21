@@ -4,7 +4,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { Edit, Loader2, Package, FileText, DollarSign, Percent, CheckCircle, XCircle } from "lucide-react";
+import { Edit, Loader2, Package, FileText, DollarSign, Percent, CheckCircle, XCircle, Ruler, Box, Tag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,9 +45,12 @@ const EditItem = ({ itemId }) => {
   } = useForm({
     defaultValues: {
       item_name: "",
+      item_type: "",
       item_description: "",
       item_price: "",
       item_tax: "",
+      item_size: "",
+      item_unit: "",
       item_status: "Active",
     },
   });
@@ -110,6 +113,11 @@ const EditItem = ({ itemId }) => {
       newErrors.item_name = "Item name must be less than 100 characters";
     }
 
+    // Validation for item_type (optional)
+    if (data.item_type && data.item_type.length > 50) {
+      newErrors.item_type = "Item type must be less than 50 characters";
+    }
+
     if (data.item_description && data.item_description.length > 500) {
       newErrors.item_description = "Description must be less than 500 characters";
     }
@@ -138,6 +146,16 @@ const EditItem = ({ itemId }) => {
       } else if (tax > 100) {
         newErrors.item_tax = "Tax cannot exceed 100%";
       }
+    }
+
+    // Validation for item_size (optional)
+    if (data.item_size && data.item_size.length > 50) {
+      newErrors.item_size = "Size must be less than 50 characters";
+    }
+
+    // Validation for item_unit (optional)
+    if (data.item_unit && data.item_unit.length > 20) {
+      newErrors.item_unit = "Unit must be less than 20 characters";
     }
 
     if (!data.item_status) {
@@ -179,9 +197,12 @@ const EditItem = ({ itemId }) => {
       const token = Cookies.get("token");
       const payload = {
         item_name: data.item_name.trim(),
+        item_type: data.item_type.trim() || null,
         item_description: data.item_description.trim() || null,
         item_price: parseFloat(data.item_price),
         item_tax: parseFloat(data.item_tax),
+        item_size: data.item_size.trim() || null,
+        item_unit: data.item_unit.trim() || null,
         item_status: data.item_status,
       };
 
@@ -257,6 +278,14 @@ const EditItem = ({ itemId }) => {
         }
         break;
         
+      case "item_type":
+        if (value && value.length > 50) {
+          tempErrors.item_type = "Item type must be less than 50 characters";
+        } else {
+          delete tempErrors.item_type;
+        }
+        break;
+        
       case "item_price":
         if (!value.trim()) {
           tempErrors.item_price = "Price is required";
@@ -288,6 +317,22 @@ const EditItem = ({ itemId }) => {
           } else {
             delete tempErrors.item_tax;
           }
+        }
+        break;
+        
+      case "item_size":
+        if (value && value.length > 50) {
+          tempErrors.item_size = "Size must be less than 50 characters";
+        } else {
+          delete tempErrors.item_size;
+        }
+        break;
+        
+      case "item_unit":
+        if (value && value.length > 20) {
+          tempErrors.item_unit = "Unit must be less than 20 characters";
+        } else {
+          delete tempErrors.item_unit;
         }
         break;
         
@@ -374,7 +419,6 @@ const EditItem = ({ itemId }) => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-1.5">
             <div className="space-y-2">
               <Label htmlFor="item_name" className="text-sm font-medium flex items-center">
-                {/* <Package className="h-4 w-4 mr-2 text-blue-600" /> */}
                 Item Name <span className="text-red-500 ml-1">*</span>
               </Label>
               <Input
@@ -393,8 +437,28 @@ const EditItem = ({ itemId }) => {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="item_type" className="text-sm font-medium flex items-center">
+              
+                Item Type
+              </Label>
+              <Input
+                id="item_type"
+                {...register("item_type", {
+                  onChange: (e) => validateField("item_type", e.target.value),
+                })}
+                placeholder="e.g., Sheet etc."
+                className={`h-10 ${errors.item_type ? "border-red-300 focus:ring-red-200" : ""}`}
+              />
+              {errors.item_type && (
+                <p className="text-xs text-red-600 mt-1 flex items-center">
+                  <span className="mr-1">⚠</span> {errors.item_type}
+                </p>
+              )}
+          
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="item_description" className="text-sm font-medium flex items-center">
-                {/* <FileText className="h-4 w-4 mr-2 text-green-600" /> */}
                 Description
               </Label>
               <Textarea
@@ -417,9 +481,52 @@ const EditItem = ({ itemId }) => {
               </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="item_size" className="text-sm font-medium flex items-center">
+             
+                  Size
+                </Label>
+                <Input
+                  id="item_size"
+                  {...register("item_size", {
+                    onChange: (e) => validateField("item_size", e.target.value),
+                  })}
+                  placeholder="e.g., 250ml, 500g"
+                  className={`h-10 ${errors.item_size ? "border-red-300 focus:ring-red-200" : ""}`}
+                />
+                {errors.item_size && (
+                  <p className="text-xs text-red-600 mt-1 flex items-center">
+                    <span className="mr-1">⚠</span> {errors.item_size}
+                  </p>
+                )}
+         
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="item_unit" className="text-sm font-medium flex items-center">
+     
+                  Unit
+                </Label>
+                <Input
+                  id="item_unit"
+                  {...register("item_unit", {
+                    onChange: (e) => validateField("item_unit", e.target.value),
+                  })}
+                  placeholder="e.g., ml, g, kg, pcs"
+                  className={`h-10 ${errors.item_unit ? "border-red-300 focus:ring-red-200" : ""}`}
+                />
+                {errors.item_unit && (
+                  <p className="text-xs text-red-600 mt-1 flex items-center">
+                    <span className="mr-1">⚠</span> {errors.item_unit}
+                  </p>
+                )}
+         
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="item_price" className="text-sm font-medium flex items-center">
-                {/* <DollarSign className="h-4 w-4 mr-2 text-purple-600" /> */}
                 Price <span className="text-red-500 ml-1">*</span>
               </Label>
               <div className="relative">
@@ -447,7 +554,6 @@ const EditItem = ({ itemId }) => {
 
             <div className="space-y-2">
               <Label htmlFor="item_tax" className="text-sm font-medium flex items-center">
-                {/* <Percent className="h-4 w-4 mr-2 text-orange-600" /> */}
                 Tax (%) <span className="text-red-500 ml-1">*</span>
               </Label>
               <div className="relative">
@@ -475,7 +581,6 @@ const EditItem = ({ itemId }) => {
 
             <div className="space-y-2">
               <Label htmlFor="item_status" className="text-sm font-medium flex items-center">
-                {/* <CheckCircle className="h-4 w-4 mr-2 text-blue-600" /> */}
                 Status <span className="text-red-500 ml-1">*</span>
               </Label>
               <Select

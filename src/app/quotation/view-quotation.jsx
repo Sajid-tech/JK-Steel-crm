@@ -3,12 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import BASE_URL from '@/config/BaseUrl';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Edit } from 'lucide-react';
 
 
 
 const ViewQuotation = () => {
     const {id}= useParams()
+    const navigate = useNavigate()
   const { data: quotationData, isLoading } = useQuery({
     queryKey: ["quotation", id],
     queryFn: async () => {
@@ -57,8 +60,18 @@ const ViewQuotation = () => {
   const { branch, subs, ...quotation } = quotationData;
 
   return (
-    <div className="max-w-4xl mx-auto bg-white">
-      
+    <div className=" relative  bg-white ">
+
+       <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate(`/quotation/edit/${quotation.id}`)}
+                            className=" absolute right-2 top-10 rounded-lg border-2 p-4 h-7 w-7 bg-blue-500 text-white hover:text-white hover:bg-blue-800"
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            
+                          </Button>
+      <div className='bg-gray-100 max-w-4xl mx-auto px-4 py-2 rounded-md'>
       <div className="flex justify-between items-start mb-8">
         <div>
           <h1 className="text-2xl font-bold mb-1">{branch?.branch_name || "J K STEEL"}</h1>
@@ -117,12 +130,12 @@ const ViewQuotation = () => {
               <td className="py-3 px-2 text-sm align-top">{index + 1}</td>
               <td className="py-3 px-2 text-sm align-top">
                 <div className="font-semibold">{item.item_name || "N/A"}</div>
-                {item.item_description && (
-                  <div className="text-xs text-gray-600">{item.item_description}</div>
+                {item.item_type =="Sheet" && (
+                  <div className="text-xs text-gray-600">{item.quotation_sub_qnty} {item.item_type}</div>
                 )}
               </td>
               <td className="py-3 px-2 text-sm text-right align-top">
-                <div>{item.quotation_sub_qnty || "0"}</div>
+                <div>{item.quotation_sub_qnty * item.quotation_sub_size} {" "} {item.quotation_sub_unit}</div>
               </td>
               <td className="py-3 px-2 text-sm text-right align-top">
                 {formatCurrency(item.quotation_sub_rate || "0")}
@@ -170,6 +183,7 @@ const ViewQuotation = () => {
       <div className="text-right mt-12">
         <p className="text-sm font-semibold mb-16">For, {branch?.branch_name || "J K STEEL"}</p>
         <p className="text-xs">AUTHORIZED SIGNATURE</p>
+      </div>
       </div>
     </div>
   );
