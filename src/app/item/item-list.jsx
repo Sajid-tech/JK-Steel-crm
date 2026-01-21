@@ -29,7 +29,7 @@ import {
 } from "@tanstack/react-table";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { ArrowUpDown, ChevronDown, ChevronLeft, ChevronRight, Edit, Eye, Search, SquarePlus, Loader2, Package } from "lucide-react";
+import { ArrowUpDown, ChevronDown, ChevronLeft, ChevronRight, Edit, Eye, Search, SquarePlus, Loader2, Package, Ruler, Box, Tag } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -275,11 +275,84 @@ const ItemList = () => {
       size: 150,
     },
     {
+      accessorKey: "item_type",
+      id: "Item Type", 
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="px-2 h-8 text-xs"
+        >
+          Item Type
+          <ArrowUpDown className="ml-1 h-3 w-3" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const itemType = row.getValue("Item Type");
+        return (
+          <div className="flex items-center">
+            {itemType ? (
+              <div className="text-xs font-medium flex items-center">
+      
+                {itemType}
+              </div>
+            ) : (
+              <div className="text-xs text-gray-400">-</div>
+            )}
+          </div>
+        );
+      },
+      size: 120,
+    },
+    {
       accessorKey: "item_description",
       id: "Description", 
       header: "Description",
       cell: ({ row }) => <div className="text-xs font-medium">{row.getValue("Description") || '-'}</div>,
       size: 180,
+    },
+    {
+      accessorKey: "item_size",
+      id: "Size",
+      header: "Size",
+      cell: ({ row }) => {
+        const size = row.getValue("Size");
+        return (
+          <div className="flex items-center">
+            {size ? (
+              <div className="text-xs font-medium flex items-center">
+           
+                {size}
+              </div>
+            ) : (
+              <div className="text-xs text-gray-400">-</div>
+            )}
+          </div>
+        );
+      },
+      size: 100,
+    },
+    {
+      accessorKey: "item_unit",
+      id: "Unit",
+      header: "Unit",
+      cell: ({ row }) => {
+        const unit = row.getValue("Unit");
+        return (
+          <div className="flex items-center">
+            {unit ? (
+              <div className="text-xs font-medium flex items-center">
+               
+                {unit}
+              </div>
+            ) : (
+              <div className="text-xs text-gray-400">-</div>
+            )}
+          </div>
+        );
+      },
+      size: 100,
     },
     {
       id: "Price & Tax",
@@ -474,7 +547,10 @@ const ItemList = () => {
 
   const filteredItems = itemsData?.data?.filter((item) =>
     item.item_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.item_description?.toLowerCase().includes(searchTerm.toLowerCase())
+    item.item_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.item_description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.item_size?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.item_unit?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
   const TableShimmer = () => {
@@ -592,14 +668,52 @@ const ItemList = () => {
                   </div>
 
                   <div className="grid grid-cols-1 gap-2 text-sm">
-                    <div className="flex flex-row items-center justify-between">
-                      <div className="flex items-start gap-2">
-                        <span className="font-medium text-gray-600 min-w-[60px]">Price:</span>
-                        <span className="text-gray-800">₹{parseFloat(item.item_price || 0).toFixed(2)}</span>
+                    <div className="flex flex-col gap-1">
+                      
+                      <div className="grid grid-cols-3 gap-2">
+                      {/* {item.item_type && (
+                        <div className="flex items-start gap-2 mb-2">
+                        
+                          <div className="flex flex-col">
+                            <span className="font-medium text-gray-600 text-xs">Item Type</span>
+                            <span className="text-gray-800 text-xs">{item.item_type}</span>
+                          </div>
+                        </div>
+                      )} */}
+                        <div className="flex items-start gap-2">
+                        
+                          <div className="flex flex-col">
+                            <span className="font-medium text-gray-600 text-xs">Size</span>
+                            <span className="text-gray-800 text-xs">{item.item_size || '-'}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2">
+                        
+                          <div className="flex flex-col">
+                            <span className="font-medium text-gray-600 text-xs">Unit</span>
+                            <span className="text-gray-800 text-xs">{item.item_unit || '-'}</span>
+                          </div>
+                        </div>
+{/*                         
                       </div>
-                      <div className="flex items-start gap-2">
-                        <span className="font-medium text-gray-600 min-w-[60px]">Tax:</span>
-                        <span className="text-gray-800">{item.item_tax}%</span>
+                      <div className="flex flex-row items-center justify-between mt-2"> */}
+
+<div className="flex items-start gap-2">
+                        
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-600 text-xs">Price</span>
+                          <span className="text-gray-800 text-xs">₹{parseFloat(item.item_price || 0).toFixed(2)}</span>
+                        </div>
+                      </div>
+                     
+                        {/* <div className="flex items-start gap-2">
+                          <span className="font-medium text-gray-600 min-w-[60px]">Price:</span>
+                          <span className="text-gray-800">₹{parseFloat(item.item_price || 0).toFixed(2)}</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="font-medium text-gray-600 min-w-[60px]">Tax:</span>
+                          <span className="text-gray-800">{item.item_tax}%</span>
+                        </div> */}
                       </div>
                     </div>
                   </div>

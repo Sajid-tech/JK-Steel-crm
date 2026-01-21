@@ -29,7 +29,7 @@ import {
 } from "@tanstack/react-table";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { ArrowUpDown, ChevronDown, ChevronLeft, ChevronRight, Eye, Search, Trash2, Loader2, FileText, Edit } from "lucide-react";
+import { ArrowUpDown, ChevronDown, ChevronLeft, ChevronRight, Eye, Search, Trash2, Loader2, FileText, Edit, Square, SquarePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -571,8 +571,8 @@ const QuotationList = () => {
           </h1>
           <Link to="/quotation/create">
             <Button size="sm" className="h-9 bg-blue-600 hover:bg-blue-700">
-              <FileText className="h-4 w-4 mr-2" />
-              Create
+              <SquarePlus className="h-4 w-4 mr-2" />
+               New
             </Button>
           </Link>
         </div>
@@ -613,11 +613,11 @@ const QuotationList = () => {
                         {(pagination.pageIndex * pagination.pageSize) + index + 1}
                       </div>
                       <div>
-                        <h3 className="font-semibold text-sm text-gray-800">{item.quotation_ref}</h3>
-                        <p className="text-xs text-gray-500">#{item.quotation_no}</p>
+                        <h3 className="font-semibold text-sm text-gray-800">{item.buyer_name}</h3>
+                        {/* <p className="text-xs text-gray-500">#{item.quotation_no}</p> */}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       <button
                         onClick={() => toggleQuotationStatus(item.id, item.quotation_status)}
                         disabled={updatingStatus[item.id] || userType === '4'}
@@ -648,33 +648,55 @@ const QuotationList = () => {
                           <Trash2 className="h-4 w-4" />
                         }
                       </Button>
+
+                      <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate(`/quotation/view/${item.id}`)}
+                      className="h-7 w-7 text-blue-600 hover:text-blue-800"
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      
+                    </Button>
                     </div>
                   </div>
-
                   <div className="grid grid-cols-1 gap-2 text-sm">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-2">
-                        <span className="font-medium text-gray-600 min-w-[80px]">Buyer:</span>
-                        <span className="text-gray-800">{item.buyer_name || '-'}</span>
+                    <div className="flex flex-col gap-1">
+                      
+                      <div className="grid grid-cols-3 gap-2">
+                      
+                        <div className="flex items-start gap-2">
+                        
+                          <div className="flex flex-col">
+                            {/* <span className="font-medium text-gray-600 text-xs">Ref</span> */}
+                            <span className="text-gray-800 text-xs">{item.quotation_ref || '-'}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2">
+                        
+                          <div className="flex flex-col">
+                            {/* <span className="font-medium text-gray-600 text-xs">Date</span> */}
+                            <span className="text-gray-800 text-xs">{item.quotation_date || '-'}</span>
+                          </div>
+                        </div>
+
+
+<div className="flex items-start gap-2">
+                        
+                        <div className="flex flex-col">
+                          {/* <span className="font-medium text-gray-600 text-xs">Amount</span> */}
+                          <span className="text-gray-800 text-xs">₹{parseFloat(item.total_amount).toFixed(2)}</span>
+                        </div>
+                        
                       </div>
-                      <div className="flex items-start gap-2">
-                        <span className="font-medium text-gray-600 min-w-[80px]">Amount:</span>
-                        <span className="text-gray-800 font-medium">₹{parseFloat(item.total_amount).toFixed(2)}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-2">
-                        <span className="font-medium text-gray-600 min-w-[80px]">Date:</span>
-                        <span className="text-gray-800">{item.quotation_date}</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="font-medium text-gray-600 min-w-[80px]">Valid Until:</span>
-                        <span className="text-gray-800">{item.quotation_valid_date}</span>
+                      
+                   
                       </div>
                     </div>
                   </div>
+                 
 
-                  <div className="flex justify-end pt-2 border-t border-gray-100">
+                  {/* <div className="flex justify-end pt-2 border-t border-gray-100">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -684,7 +706,7 @@ const QuotationList = () => {
                       <Eye className="h-4 w-4 mr-1" />
                       View Details
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ))
@@ -768,7 +790,7 @@ const QuotationList = () => {
             </DropdownMenu>
             <Link to="/quotation/create">
               <Button size="sm" className="h-9 bg-blue-600 hover:bg-blue-700">
-                <FileText className="h-4 w-4 mr-2" />
+                <SquarePlus className="h-4 w-4 mr-2" />
                 Create Quotation
               </Button>
             </Link>

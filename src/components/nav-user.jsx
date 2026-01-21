@@ -86,11 +86,11 @@ export function NavUser({ user }) {
               </DropdownMenuLabel>
 
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setOpen(true)}>
+              {/* <DropdownMenuItem onClick={() => setOpen(true)}>
                 <Key />
 
                 <span className=" cursor-pointer">Change Password</span>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem onClick={handleLogout}>
                 <LogOut />
 

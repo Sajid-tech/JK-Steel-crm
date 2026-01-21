@@ -145,12 +145,12 @@ export default function Page({ children }) {
               <DropdownMenuSeparator className="bg-blue-200" />
               <DropdownMenuItem className="hover:bg-blue-100 focus:bg-blue-100 rounded-md my-0.5 mx-1" onClick={()=>navigate('/setting')}>
                 <Key className="mr-2 h-4 w-4 text-blue-700" />
-                <span className="cursor-pointer">Profile</span>
+                <span className="cursor-pointer">Settings</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-blue-100 focus:bg-blue-100 rounded-md my-0.5 mx-1" onClick={() => setOpen(true)}>
+              {/* <DropdownMenuItem className="hover:bg-blue-100 focus:bg-blue-100 rounded-md my-0.5 mx-1" onClick={() => setOpen(true)}>
                 <Key className="mr-2 h-4 w-4 text-blue-700" />
                 <span className="cursor-pointer">Change Password</span>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem className="hover:bg-blue-100 focus:bg-blue-100 rounded-md my-0.5 mx-1" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4 text-blue-700" />
                 <span className="cursor-pointer">Log out</span>

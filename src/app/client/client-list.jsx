@@ -29,7 +29,7 @@ import {
 } from "@tanstack/react-table";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { ArrowUpDown, ChevronDown, ChevronLeft, ChevronRight, Edit, Eye, Search, SquarePlus, Loader2 } from "lucide-react";
+import { ArrowUpDown, ChevronDown, ChevronLeft, ChevronRight, Edit, Eye, Search, SquarePlus, Loader2, MessageCircle, Phone, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CreateClient from "./create-client";
@@ -599,22 +599,56 @@ const ClientList = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2 text-sm">
-                    <div className="flex flex-row items-center justify-between">
-                      <div className="flex items-start gap-2">
-                        <span className="font-medium text-gray-600 min-w-[60px]">Phone:</span>
-                        <span className="text-gray-800">{item.buyer_mobile || '-'}</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="font-medium text-gray-600 min-w-[60px]">GST/VAT:</span>
-                        <span className="text-gray-800">{item.buyer_gst_vat || '-'}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <span className="font-medium text-gray-600 min-w-[60px]">Email:</span>
-                      <span className="text-blue-600 truncate">{item.buyer_email || '-'}</span>
-                    </div>
-                  </div>
+                  
+<div className="grid grid-cols-1 gap-2 text-sm">
+  <div className="flex flex-row items-center justify-between">
+  
+    <div className="flex items-center gap-2">
+    
+      <span className="text-gray-800">
+        {item.buyer_mobile || "-"}
+      </span>
+
+      {item.buyer_mobile && (
+        <div className="flex items-center gap-2 ml-2">
+          <a
+            href={`tel:${item.buyer_mobile}`}
+            className="text-green-600 hover:text-green-700"
+          >
+            <Phone size={16} />
+          </a>
+
+          <a
+            href={`https://wa.me/${item.buyer_mobile}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-emerald-600 hover:text-emerald-700"
+          >
+            <MessageCircle size={16} />
+          </a>
+        </div>
+      )}
+    </div>
+
+   
+    <div className="flex items-center gap-2">
+     
+      <span className="text-blue-600 truncate">
+        {item.buyer_email || "-"}
+      </span>
+
+      {item.buyer_email && (
+        <a
+          href={`mailto:${item.buyer_email}`}
+          className="text-blue-600 hover:text-blue-700 ml-1"
+        >
+          <Mail size={16} />
+        </a>
+      )}
+    </div>
+  </div>
+</div>
+
                 </div>
               </div>
             ))

@@ -90,7 +90,7 @@ export function AppSidebar({ ...props }) {
         isActive: false,
       },
       {
-        title: "Setting",
+        title: "Settings",
         url: "/setting",
         icon: Package,
         isActive: false,

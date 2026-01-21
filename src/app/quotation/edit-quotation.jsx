@@ -33,7 +33,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { ArrowLeft, MinusCircle, PlusCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, MinusCircle, PlusCircle, Trash2, TrashIcon } from "lucide-react";
 import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -64,6 +64,8 @@ const EditQuotation = () => {
     {
       id: null,
       quotation_sub_item_id: "",
+      quotation_sub_size: "",
+      quotation_sub_unit: "",
       quotation_sub_qnty: "",
       quotation_sub_rate: "",
       quotation_sub_discount: "",
@@ -71,7 +73,6 @@ const EditQuotation = () => {
       quotation_sub_amount: "",
     },
   ]);
-
 
   const { data: quotationData, isLoading } = useQuery({
     queryKey: ["quotation", id],
@@ -107,7 +108,6 @@ const EditQuotation = () => {
     },
   });
 
-
   useEffect(() => {
     if (quotationData) {
       setFormData({
@@ -123,6 +123,8 @@ const EditQuotation = () => {
           quotationData.subs.map((sub) => ({
             id: sub.id,
             quotation_sub_item_id: sub.quotation_sub_item_id?.toString() || "",
+            quotation_sub_size: sub.quotation_sub_size || "",
+            quotation_sub_unit: sub.quotation_sub_unit || "",
             quotation_sub_qnty: sub.quotation_sub_qnty || "",
             quotation_sub_rate: sub.quotation_sub_rate || "",
             quotation_sub_discount: sub.quotation_sub_discount || "",
@@ -140,6 +142,8 @@ const EditQuotation = () => {
       {
         id: null, 
         quotation_sub_item_id: "",
+        quotation_sub_size: "",
+        quotation_sub_unit: "",
         quotation_sub_qnty: "",
         quotation_sub_rate: "",
         quotation_sub_discount: "",
@@ -157,7 +161,6 @@ const EditQuotation = () => {
         setItemToDelete({ index, id: item.id });
         setDeleteDialogOpen(true);
       } else {
-      
         if (itemsData.length > 1) {
           setItemsData((prev) => prev.filter((_, i) => i !== index));
         }
@@ -166,7 +169,6 @@ const EditQuotation = () => {
     [itemsData]
   );
 
-  
   const deleteItemMutation = useMutation({
     mutationFn: async (itemId) => {
       const token = Cookies.get("token");
@@ -175,7 +177,6 @@ const EditQuotation = () => {
       });
     },
     onSuccess: () => {
-     
       if (itemToDelete) {
         if (itemsData.length > 1) {
           setItemsData((prev) => prev.filter((_, i) => i !== itemToDelete.index));
@@ -209,29 +210,55 @@ const EditQuotation = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleItemSelect = (rowIndex, itemId) => {
+    if (!itemsListData || !itemId) return;
+
+    const selectedItem = itemsListData.find(
+      (item) => item.id.toString() === itemId.toString()
+    );
+
+    if (selectedItem) {
+      const updatedData = [...itemsData];
+      updatedData[rowIndex] = {
+        ...updatedData[rowIndex],
+        quotation_sub_item_id: itemId,
+        quotation_sub_rate: selectedItem.item_price || "",
+        quotation_sub_size: selectedItem.item_size || "",
+        quotation_sub_unit: selectedItem.item_unit || "",
+      };
+
+      // Recalculate amount if quantity is already set
+      if (updatedData[rowIndex].quotation_sub_qnty) {
+        const qnty = parseFloat(updatedData[rowIndex].quotation_sub_qnty) || 0;
+        const rate = parseFloat(selectedItem.item_price) || 0;
+        const size = parseFloat(updatedData[rowIndex].quotation_sub_size) || 1;
+        
+        // Calculate amount: size × quantity × rate
+        const amount = size * qnty * rate;
+        updatedData[rowIndex].quotation_sub_amount = amount.toFixed(2);
+      }
+
+      setItemsData(updatedData);
+    }
+  };
+
   const handleItemChange = (rowIndex, field, value) => {
     const updatedData = [...itemsData];
     updatedData[rowIndex][field] = value;
 
+    // Recalculate amount when quantity, rate, or size changes
     if (
       field === "quotation_sub_qnty" ||
       field === "quotation_sub_rate" ||
-      field === "quotation_sub_discount" ||
-      field === "quotation_sub_tax"
+      field === "quotation_sub_size"
     ) {
       const qnty = parseFloat(updatedData[rowIndex].quotation_sub_qnty) || 0;
       const rate = parseFloat(updatedData[rowIndex].quotation_sub_rate) || 0;
-      const discount =
-        parseFloat(updatedData[rowIndex].quotation_sub_discount) || 0;
-      const tax = parseFloat(updatedData[rowIndex].quotation_sub_tax) || 0;
-
-      const amountBeforeTax = qnty * rate;
-      const discountAmount = (amountBeforeTax * discount) / 100;
-      const amountAfterDiscount = amountBeforeTax - discountAmount;
-      const taxAmount = (amountAfterDiscount * tax) / 100;
-      const finalAmount = amountAfterDiscount + taxAmount;
-
-      updatedData[rowIndex].quotation_sub_amount = finalAmount.toFixed(2);
+      const size = parseFloat(updatedData[rowIndex].quotation_sub_size) || 1;
+      
+      // Calculate amount: size × quantity × rate
+      const amount = size * qnty * rate;
+      updatedData[rowIndex].quotation_sub_amount = amount.toFixed(2);
     }
 
     setItemsData(updatedData);
@@ -325,8 +352,10 @@ const EditQuotation = () => {
       ...formData,
       quotation_buyer_id: parseInt(formData.quotation_buyer_id),
       subs: itemsData.map((item) => ({
-        id: item.id || undefined, 
+        id: item.id || undefined,
         quotation_sub_item_id: parseInt(item.quotation_sub_item_id),
+        quotation_sub_size: item.quotation_sub_size || "",
+        quotation_sub_unit: item.quotation_sub_unit || "",
         quotation_sub_qnty: parseFloat(item.quotation_sub_qnty),
         quotation_sub_rate: parseFloat(item.quotation_sub_rate),
         quotation_sub_discount: parseFloat(item.quotation_sub_discount) || 0,
@@ -386,11 +415,11 @@ const EditQuotation = () => {
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <h1 className="text-xl font-bold text-gray-800">
+              <h1 className="text-md font-bold text-gray-800">
                 Edit Quotation #{quotationData?.quotation_ref}
               </h1>
             </div>
-            <div className="flex gap-2">
+            <div className="hidden sm:block">
               <Button
                 type="button"
                 variant="outline"
@@ -401,7 +430,7 @@ const EditQuotation = () => {
               </Button>
               <Button
                 type="submit"
-                className="h-9 bg-blue-600 hover:bg-blue-700"
+                className="h-9 ml-2 bg-blue-600 hover:bg-blue-700"
                 disabled={updateQuotationMutation.isPending}
               >
                 {updateQuotationMutation.isPending
@@ -411,9 +440,126 @@ const EditQuotation = () => {
             </div>
           </div>
 
-          <div className="border border-gray-200 shadow-sm">
+          <div className=" block sm:hidden  border border-blue-500 shadow-sm  rounded-lg ">
             <div className="p-2">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                <div className="">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Quotation Ref :  {quotationData?.quotation_ref || ""}
+                  </Label>
+                  {/* <Input
+                    className="h-9 bg-gray-50"
+                    value={quotationData?.quotation_ref || ""}
+                    disabled
+                    placeholder="Auto-generated"
+                  /> */}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                <div className="">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Date <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    className="h-9"
+                    value={formData.quotation_date}
+                    onChange={(e) => handleFormChange(e, "quotation_date")}
+                    type="date"
+                  />
+                </div>
+                <div className="">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Valid Until <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    className={`h-9 ${
+                      errors.quotation_valid_date ? "border-red-300" : ""
+                    }`}
+                    value={formData.quotation_valid_date}
+                    onChange={(e) =>
+                      handleFormChange(e, "quotation_valid_date")
+                    }
+                    type="date"
+                  />
+                  {errors.quotation_valid_date && (
+                    <p className="text-xs text-red-600 mt-1">
+                      {errors.quotation_valid_date}
+                    </p>
+                  )}
+                </div>
+                </div>
+                <div className="">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Buyer <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={formData.quotation_buyer_id}
+                    onValueChange={(value) =>
+                      handleFormChange(value, "quotation_buyer_id")
+                    }
+                  >
+                    <SelectTrigger
+                      className={`h-9 ${
+                        errors.quotation_buyer_id ? "border-red-300" : ""
+                      }`}
+                    >
+                      <SelectValue placeholder="Select Buyer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {buyersData?.map((buyer) => (
+                        <SelectItem key={buyer.id} value={buyer.id.toString()}>
+                          {buyer.buyer_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.quotation_buyer_id && (
+                    <p className="text-xs text-red-600 mt-1">
+                      {errors.quotation_buyer_id}
+                    </p>
+                  )}
+                </div>
+
+                <div className="">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Status
+                  </Label>
+                  <Select
+                    value={formData.quotation_status}
+                    onValueChange={(value) =>
+                      handleFormChange(value, "quotation_status")
+                    }
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Pending">Pending</SelectItem>
+                      <SelectItem value="Accepted">Accepted</SelectItem>
+                      <SelectItem value="Rejected">Rejected</SelectItem>
+                      <SelectItem value="Expired">Expired</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                
+
+                <div className="md:col-span-4 ">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Remarks
+                  </Label>
+                  <Textarea
+                    className="min-h-[80px]"
+                    value={formData.quotation_remarks}
+                    onChange={(e) => handleFormChange(e, "quotation_remarks")}
+                    placeholder="Enter remarks"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className=" hidden sm:block border border-gray-200 shadow-sm">
+            <div className="p-2">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
                     Quotation Ref
@@ -513,7 +659,7 @@ const EditQuotation = () => {
                   )}
                 </div>
 
-                <div className="md:col-span-4 space-y-2">
+                <div className="md:col-span-5 space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
                     Remarks
                   </Label>
@@ -537,11 +683,27 @@ const EditQuotation = () => {
               {itemsData.map((row, rowIndex) => (
                 <div
                   key={rowIndex}
-                  className="bg-white border border-gray-200 rounded-lg p-2 space-y-1"
+                  className="bg-white border border-blue-500 rounded-lg p-2 space-y-1 shadow-2xl shadow-blue-300"
                 >
                   <div className="flex justify-between items-start">
                     <h3 className="font-medium text-gray-700">
-                      Item {rowIndex + 1}
+                    <div className="flex flex-row items-center gap-5">
+                        <span> {rowIndex + 1}.  </span>
+{row.quotation_sub_size &&(
+
+
+<p className="text-xs text-red-600">
+               Size:    {row.quotation_sub_size}
+                      </p>
+)}
+{row.quotation_sub_unit &&(
+
+
+                      <p className="text-xs text-red-600">
+                  Unit:    {row.quotation_sub_unit}
+                      </p>
+                      )}
+</div>
                     </h3>
                     <div className="flex gap-1">
                       {row.id && (
@@ -566,7 +728,7 @@ const EditQuotation = () => {
                           className="h-6 w-6 p-0 text-red-500"
                           title="Remove item"
                         >
-                          <MinusCircle className="h-4 w-4" />
+                          <TrashIcon className="h-4 w-4" />
                         </Button>
                       )}
                     </div>
@@ -576,11 +738,7 @@ const EditQuotation = () => {
                     <Select
                       value={row.quotation_sub_item_id}
                       onValueChange={(value) =>
-                        handleItemChange(
-                          rowIndex,
-                          "quotation_sub_item_id",
-                          value
-                        )
+                        handleItemSelect(rowIndex, value)
                       }
                     >
                       <SelectTrigger
@@ -605,7 +763,29 @@ const EditQuotation = () => {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
+                      <Input
+                        className="h-8 text-sm bg-gray-50"
+                        value={row.quotation_sub_size}
+                        readOnly
+                        placeholder="Size"
+                        type="text"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Input
+                        className="h-8 text-sm bg-gray-50"
+                        value={row.quotation_sub_unit}
+                        readOnly
+                        placeholder="Unit"
+                        type="text"
+                      />
+                    </div>
+                  </div> */}
+
+                  <div className="grid grid-cols-3 gap-3">
                     <div className="space-y-2">
                       <Input
                         className={`h-8 text-sm ${
@@ -661,51 +841,7 @@ const EditQuotation = () => {
                         </p>
                       )}
                     </div>
-                  </div>
-
-                  {/* <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
-                      <Input
-                        className="h-8 text-sm"
-                        value={row.quotation_sub_discount}
-                        onChange={(e) =>
-                          handleItemChange(
-                            rowIndex,
-                            "quotation_sub_discount",
-                            e.target.value
-                          )
-                        }
-                        placeholder="Discount %"
-                        type="text"
-                        onKeyDown={keyDown}
-                        min="0"
-                        max="100"
-                        step="0.01"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Input
-                        className="h-8 text-sm"
-                        value={row.quotation_sub_tax}
-                        onChange={(e) =>
-                          handleItemChange(
-                            rowIndex,
-                            "quotation_sub_tax",
-                            e.target.value
-                          )
-                        }
-                        placeholder="Tax %"
-                        type="text"
-                        onKeyDown={keyDown}
-                        min="0"
-                        max="100"
-                        step="0.01"
-                      />
-                    </div>
-                  </div> */}
-
-                  <div className="space-y-2">
                     <Input
                       className="h-8 text-sm bg-gray-50"
                       value={row.quotation_sub_amount}
@@ -713,14 +849,66 @@ const EditQuotation = () => {
                       placeholder="0.00"
                     />
                   </div>
+                  </div>
+
+                  {/* <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Input
+                        className="h-8 text-sm bg-gray-50"
+                        value={row.quotation_sub_discount}
+                        disabled
+                        placeholder="0"
+                        type="text"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Input
+                        className="h-8 text-sm bg-gray-50"
+                        value={row.quotation_sub_tax}
+                        disabled
+                        placeholder="0"
+                        type="text"
+                      />
+                    </div>
+                  </div> */}
+
+                  {/* <div className="space-y-2">
+                    <Input
+                      className="h-8 text-sm bg-gray-50"
+                      value={row.quotation_sub_amount}
+                      readOnly
+                      placeholder="0.00"
+                    />
+                  </div> */}
                 </div>
               ))}
             </div>
 
-            <Button type="button" size="sm" className="h-8" onClick={addRow}>
+            <Button type="button" size="sm" className="h-8 mt-2" onClick={addRow}>
               <PlusCircle className="h-4 w-4 mr-2" />
               Add
             </Button>
+
+            <div className="flex flex-row items-center justify-between mt-5 gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate("/quotation")}
+                className="h-9"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="h-9 ml-2 bg-blue-600 hover:bg-blue-700"
+                disabled={updateQuotationMutation.isPending}
+              >
+                {updateQuotationMutation.isPending
+                  ? "Updating..."
+                  : "Update Quotation"}
+              </Button>
+            </div>
           </div>
 
           <div className="hidden sm:block">
@@ -736,6 +924,12 @@ const EditQuotation = () => {
                       <TableRow className="bg-gray-50 hover:bg-gray-50">
                         <TableHead className="h-10 text-xs font-medium text-gray-600">
                           Item
+                        </TableHead>
+                        <TableHead className="h-10 text-xs font-medium text-gray-600">
+                          Size
+                        </TableHead>
+                        <TableHead className="h-10 text-xs font-medium text-gray-600">
+                          Unit
                         </TableHead>
                         <TableHead className="h-10 text-xs font-medium text-gray-600">
                           Qty
@@ -767,11 +961,7 @@ const EditQuotation = () => {
                             <Select
                               value={row.quotation_sub_item_id}
                               onValueChange={(value) =>
-                                handleItemChange(
-                                  rowIndex,
-                                  "quotation_sub_item_id",
-                                  value
-                                )
+                                handleItemSelect(rowIndex, value)
                               }
                             >
                               <SelectTrigger
@@ -799,6 +989,26 @@ const EditQuotation = () => {
                                 {errors[`item_${rowIndex}_id`]}
                               </p>
                             )}
+                          </TableCell>
+
+                          <TableCell className="py-2">
+                            <Input
+                              className="h-8 text-sm bg-gray-50"
+                              value={row.quotation_sub_size}
+                              readOnly
+                              placeholder="Size"
+                              type="text"
+                            />
+                          </TableCell>
+
+                          <TableCell className="py-2">
+                            <Input
+                              className="h-8 text-sm bg-gray-50"
+                              value={row.quotation_sub_unit}
+                              readOnly
+                              placeholder="Unit"
+                              type="text"
+                            />
                           </TableCell>
 
                           <TableCell className="py-2">
@@ -859,43 +1069,21 @@ const EditQuotation = () => {
 
                           <TableCell className="py-2">
                             <Input
-                              className="h-8 text-sm"
+                              className="h-8 text-sm bg-gray-50"
                               value={row.quotation_sub_discount}
-                              onChange={(e) =>
-                                handleItemChange(
-                                  rowIndex,
-                                  "quotation_sub_discount",
-                                  e.target.value
-                                )
-                              }
+                              disabled
                               placeholder="0"
                               type="text"
-                              onKeyDown={keyDown}
-                              min="0"
-                              max="100"
-                              step="0.01"
-                              disabled
                             />
                           </TableCell>
 
                           <TableCell className="py-2">
                             <Input
-                              className="h-8 text-sm"
+                              className="h-8 text-sm bg-gray-50"
                               value={row.quotation_sub_tax}
-                              onChange={(e) =>
-                                handleItemChange(
-                                  rowIndex,
-                                  "quotation_sub_tax",
-                                  e.target.value
-                                )
-                              }
+                              disabled
                               placeholder="0"
                               type="text"
-                              onKeyDown={keyDown}
-                              min="0"
-                              max="100"
-                              step="0.01"
-                              disabled
                             />
                           </TableCell>
 
