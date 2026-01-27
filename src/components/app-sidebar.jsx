@@ -137,10 +137,10 @@ export function AppSidebar({ ...props }) {
             title: "Quotation",
             url: "/report/quotation-report",
           },
-          {
-            title: "Quotation detail",
-            url: "/report/quotation-detail-report",
-          },
+          // {
+          //   title: "Quotation detail",
+          //   url: "/report/quotation-detail-report",
+          // },
           
         ],
       },
